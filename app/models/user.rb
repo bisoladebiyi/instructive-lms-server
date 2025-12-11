@@ -9,6 +9,8 @@ class User < ApplicationRecord
   # Student associations
   has_many :enrollments, foreign_key: :student_id, dependent: :destroy
   has_many :enrolled_courses, through: :enrollments, source: :course
+  has_many :lesson_completions, foreign_key: :student_id, dependent: :destroy
+  has_many :completed_lessons, through: :lesson_completions, source: :lesson
 
   validates :email, presence: true,
                     uniqueness: { case_sensitive: false },

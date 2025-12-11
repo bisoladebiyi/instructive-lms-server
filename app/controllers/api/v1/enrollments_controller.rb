@@ -47,11 +47,13 @@ module Api
       def progress
         @enrollment = current_user.enrollments.find_by(course: @course)
 
-        if @enrollment
-          # TODO: Calculate actual progress from completed lessons when lessons are implemented
-          total_lessons = @course.sections.count # Placeholder until lessons exist
-          completed_lessons = 0
+        total_lessons = Lesson.joins(:section).where(sections: { course_id: @course.id }).count
+        completed_lessons = current_user.lesson_completions
+                                        .joins(lesson: :section)
+                                        .where(sections: { course_id: @course.id })
+                                        .count
 
+        if @enrollment
           render json: {
             course_id: @course.id,
             course_title: @course.title,
@@ -66,7 +68,9 @@ module Api
           render json: {
             course_id: @course.id,
             is_enrolled: false,
-            progress: 0
+            progress: 0,
+            total_lessons: total_lessons,
+            completed_lessons: 0
           }, status: :ok
         end
       end
