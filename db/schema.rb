@@ -10,9 +10,50 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_06_000001) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_06_000004) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "courses", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "description"
+    t.string "category"
+    t.string "duration"
+    t.string "banner_image"
+    t.text "learning_points", default: [], array: true
+    t.bigint "instructor_id", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "published_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_courses_on_category"
+    t.index ["instructor_id", "status"], name: "index_courses_on_instructor_id_and_status"
+    t.index ["instructor_id"], name: "index_courses_on_instructor_id"
+    t.index ["status"], name: "index_courses_on_status"
+  end
+
+  create_table "enrollments", force: :cascade do |t|
+    t.bigint "student_id", null: false
+    t.bigint "course_id", null: false
+    t.integer "progress", default: 0, null: false
+    t.datetime "enrolled_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_enrollments_on_course_id"
+    t.index ["student_id", "course_id"], name: "index_enrollments_on_student_id_and_course_id", unique: true
+    t.index ["student_id"], name: "index_enrollments_on_student_id"
+  end
+
+  create_table "sections", force: :cascade do |t|
+    t.string "title", null: false
+    t.integer "position", default: 0, null: false
+    t.bigint "course_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id", "position"], name: "index_sections_on_course_id_and_position"
+    t.index ["course_id"], name: "index_sections_on_course_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email", null: false
@@ -26,4 +67,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_06_000001) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["role"], name: "index_users_on_role"
   end
+
+  add_foreign_key "courses", "users", column: "instructor_id"
+  add_foreign_key "enrollments", "courses"
+  add_foreign_key "enrollments", "users", column: "student_id"
+  add_foreign_key "sections", "courses"
 end

@@ -12,6 +12,21 @@ Rails.application.routes.draw do
       post "auth/login", to: "auth#login"
       post "auth/logout", to: "auth#logout"
       get "auth/me", to: "auth#me"
+
+      # Course routes (for instructors and browsing)
+      resources :courses, only: [ :index, :show, :create, :update, :destroy ] do
+        member do
+          post :publish
+          post :unpublish
+        end
+        # Enrollment routes (for students)
+        post :enroll, to: "enrollments#enroll"
+        delete :unenroll, to: "enrollments#unenroll"
+        get :progress, to: "enrollments#progress"
+      end
+
+      # Student enrollments
+      get "enrollments", to: "enrollments#index"
     end
   end
 

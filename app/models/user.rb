@@ -3,6 +3,13 @@ class User < ApplicationRecord
 
   enum :role, { student: 0, instructor: 1 }
 
+  # Instructor associations
+  has_many :courses, foreign_key: :instructor_id, dependent: :destroy
+
+  # Student associations
+  has_many :enrollments, foreign_key: :student_id, dependent: :destroy
+  has_many :enrolled_courses, through: :enrollments, source: :course
+
   validates :email, presence: true,
                     uniqueness: { case_sensitive: false },
                     format: { with: URI::MailTo::EMAIL_REGEXP }
