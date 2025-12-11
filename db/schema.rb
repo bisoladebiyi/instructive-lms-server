@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_06_000004) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_06_000006) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -45,6 +45,32 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_06_000004) do
     t.index ["student_id"], name: "index_enrollments_on_student_id"
   end
 
+  create_table "lesson_completions", force: :cascade do |t|
+    t.bigint "student_id", null: false
+    t.bigint "lesson_id", null: false
+    t.datetime "completed_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lesson_id"], name: "index_lesson_completions_on_lesson_id"
+    t.index ["student_id", "lesson_id"], name: "index_lesson_completions_on_student_id_and_lesson_id", unique: true
+    t.index ["student_id"], name: "index_lesson_completions_on_student_id"
+  end
+
+  create_table "lessons", force: :cascade do |t|
+    t.string "title", null: false
+    t.string "duration"
+    t.integer "lesson_type", default: 0, null: false
+    t.string "video_url"
+    t.text "text_content"
+    t.string "pdf_url"
+    t.integer "position", default: 0, null: false
+    t.bigint "section_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["section_id", "position"], name: "index_lessons_on_section_id_and_position"
+    t.index ["section_id"], name: "index_lessons_on_section_id"
+  end
+
   create_table "sections", force: :cascade do |t|
     t.string "title", null: false
     t.integer "position", default: 0, null: false
@@ -71,5 +97,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_06_000004) do
   add_foreign_key "courses", "users", column: "instructor_id"
   add_foreign_key "enrollments", "courses"
   add_foreign_key "enrollments", "users", column: "student_id"
+  add_foreign_key "lesson_completions", "lessons"
+  add_foreign_key "lesson_completions", "users", column: "student_id"
+  add_foreign_key "lessons", "sections"
   add_foreign_key "sections", "courses"
 end

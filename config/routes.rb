@@ -23,6 +23,13 @@ Rails.application.routes.draw do
         post :enroll, to: "enrollments#enroll"
         delete :unenroll, to: "enrollments#unenroll"
         get :progress, to: "enrollments#progress"
+
+        # Lesson routes
+        resources :lessons, only: [ :index, :show, :create, :update, :destroy ] do
+          member do
+            post :complete
+          end
+        end
       end
 
       # Student enrollments

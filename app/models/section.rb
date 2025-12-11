@@ -1,5 +1,6 @@
 class Section < ApplicationRecord
   belongs_to :course
+  has_many :lessons, -> { order(position: :asc) }, dependent: :destroy
 
   validates :title, presence: true
   validates :position, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
