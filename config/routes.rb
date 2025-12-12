@@ -34,6 +34,20 @@ Rails.application.routes.draw do
 
       # Student enrollments
       get "enrollments", to: "enrollments#index"
+
+      # User profile routes
+      get "users/profile", to: "users#profile"
+      put "users/profile", to: "users#update_profile"
+      put "users/change-password", to: "users#change_password"
+
+      # Instructor dashboard routes
+      get "instructor/stats", to: "instructor#stats"
+      get "instructor/students", to: "instructor#students"
+      get "instructor/courses/recent", to: "instructor#recent_courses"
+
+      # Student dashboard routes
+      get "student/stats", to: "student#stats"
+      get "student/courses/recent", to: "student#recent_courses"
     end
   end
 

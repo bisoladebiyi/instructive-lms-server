@@ -7,12 +7,14 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    # Allow requests from the Vite dev server and production frontend
-    origins "http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000"
+    origins_list = ENV.fetch("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000").split(",")
+
+    origins(*origins_list)
 
     resource "*",
       headers: :any,
       methods: [:get, :post, :put, :patch, :delete, :options, :head],
-      credentials: true
+      credentials: true,
+      expose: ["Authorization"]
   end
 end
