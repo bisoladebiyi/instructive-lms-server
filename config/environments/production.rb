@@ -77,13 +77,10 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  # Allow Railway domains and any custom domains set via ALLOWED_HOSTS env var
-  config.hosts = [
-    /.*\.railway\.app/,  # Allow all Railway subdomains
-    /.*\.up\.railway\.app/,  # Allow Railway internal domains
-  ]
+  config.hosts << "web-production-c9cb.up.railway.app"
 
   # Add custom hosts from environment variable (comma-separated)
+  # Set ALLOWED_HOSTS=yourdomain.com,api.yourdomain.com in Railway
   if ENV["ALLOWED_HOSTS"].present?
     ENV["ALLOWED_HOSTS"].split(",").each do |host|
       config.hosts << host.strip
