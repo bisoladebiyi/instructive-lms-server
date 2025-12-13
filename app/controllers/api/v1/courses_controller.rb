@@ -133,9 +133,27 @@ module Api
       end
 
       def update_sections
-        # Remove existing sections and recreate
-        @course.sections.destroy_all
-        create_sections
+        sections_data = params[:course][:sections]
+        existing_sections = @course.sections.order(:position).to_a
+
+        sections_data.each_with_index do |section_title, index|
+          next if section_title.blank?
+
+          if index < existing_sections.length
+            existing_sections[index].update!(title: section_title, position: index)
+          else
+            @course.sections.create!(title: section_title, position: index)
+          end
+        end
+
+        if sections_data.length < existing_sections.length
+          sections_to_check = existing_sections[sections_data.length..]
+          sections_to_check.each do |section|
+            if section.lessons.empty?
+              section.destroy
+            end
+          end
+        end
       end
 
       def course_response(course, include_sections: false)
